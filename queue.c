@@ -81,6 +81,13 @@ int number_of_moves(struct game_state start) {
 }
 
 bool check_correct(struct game_state c){
+	if((serialize(c)>>15) == 2501999725154){
+		return true;
+	}else{
+		return false;
+	}
+	
+	/*
 	
 	for (int i = 0; i < 4; i++){
                 for (int j = 0; j < 4; j++){
@@ -89,13 +96,15 @@ bool check_correct(struct game_state c){
                         }
                 }
         }
+	printf("serialized correct: %zu", (serialize(c)>>15));
 	return true;
+	*/
 }
 
 bool check(struct game_state c, struct queue q){
 	int i = 0; 
 	//printf("flag");
-	while(q.data.head != NULL && i < 25){
+	while(q.data.head != NULL && i < 250){
 		//printf("flag2");
 		if ((serialize(c)>>15) == (q.data.head->value>>15)){
 			//printf("aha!");
