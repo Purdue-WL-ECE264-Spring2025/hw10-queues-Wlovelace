@@ -102,16 +102,17 @@ bool check_correct(struct game_state c){
 }
 
 bool check(struct game_state c, struct queue q){
-	int i = 0; 
+	//int i = 0; 
 	//printf("flag");
-	while(q.data.head != NULL && i < 250){
+	size_t temp = serialize(c)>>15;
+	while(q.data.head != NULL){
 		//printf("flag2");
-		if ((serialize(c)>>15) == (q.data.head->value>>15)){
+		if (temp == (q.data.head->value>>15)){
 			//printf("aha!");
 			return false;
 		}
 		q.data.head = q.data.head->next; 
-		i++;
+		//i++;
 	}
 	return true; 
 }
