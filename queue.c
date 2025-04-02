@@ -55,20 +55,20 @@ int number_of_moves(struct game_state start) {
 		if(c.empty_row != 3){
 			struct game_state new = c;
                         move_up(&new);
-			enqueue(&q, new);
-                        //if(check(new,q)){enqueue(&q, new);}
+			//enqueue(&q, new);
+                        if(check(new,q)){enqueue(&q, new);}
                 }
 		if(c.empty_col != 0){
 			struct game_state new = c;
                         move_right(&new);
-			enqueue(&q, new);
-                        //if(check(new,q)){enqueue(&q, new);}
+			//enqueue(&q, new);
+                        if(check(new,q)){enqueue(&q, new);}
                 }
 		if(c.empty_col != 3){
 			struct game_state new = c;
                         move_left(&new);
-                        enqueue(&q, new);
-			//if(check(new,q)){enqueue(&q, new);}
+                        //enqueue(&q, new);
+			if(check(new,q)){enqueue(&q, new);}
                 }
 
 		c.num_steps++;
