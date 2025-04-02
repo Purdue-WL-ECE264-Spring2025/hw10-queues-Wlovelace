@@ -1,5 +1,6 @@
 #include "queue.h"
 #include "tile_game.h"
+#include "stdio.h"
 
 //void insert_at_tail(struct linked_list *list, size_t value);
 //size_t remove_from_head(struct linked_list *list); 
@@ -19,6 +20,7 @@
 //void move_left(struct game_state *state);
 //void move_right(struct game_state *state);
 bool check_correct(struct game_state c);
+bool check(struct game_state c, struct queue q);
 
 void enqueue(struct queue *q, struct game_state state) {
 	insert_at_tail(&q->data,serialize(state)); 	
@@ -35,8 +37,8 @@ int number_of_moves(struct game_state start) {
 
 	while (q.data.head != NULL){
 		
-		struct game_state c = dequeue(&q); 	 
-		
+		struct game_state c = dequeue(&q); 		
+
 		if(check_correct(c) == true){
 			free_list(q.data); 
 			return c.num_steps;
@@ -45,26 +47,28 @@ int number_of_moves(struct game_state start) {
 		if(c.empty_row != 0){
 			struct game_state new = c; 
 			move_down(&new);
-			enqueue(&q, new); 
-			//free(new);  		
+			//enqueue(&q, new);
+			if(check(new,q)){
+				enqueue(&q, new);
+			}   		
 		}
 		if(c.empty_row != 3){
 			struct game_state new = c;
                         move_up(&new);
-                        enqueue(&q, new);
-			//free(new);
+			enqueue(&q, new);
+                        //if(check(new,q)){enqueue(&q, new);}
                 }
 		if(c.empty_col != 0){
 			struct game_state new = c;
                         move_right(&new);
-                        enqueue(&q, new);
-			//free(new);
+			enqueue(&q, new);
+                        //if(check(new,q)){enqueue(&q, new);}
                 }
 		if(c.empty_col != 3){
 			struct game_state new = c;
                         move_left(&new);
                         enqueue(&q, new);
-			//free(new); 
+			//if(check(new,q)){enqueue(&q, new);}
                 }
 
 		c.num_steps++;
@@ -77,6 +81,7 @@ int number_of_moves(struct game_state start) {
 }
 
 bool check_correct(struct game_state c){
+	
 	for (int i = 0; i < 4; i++){
                 for (int j = 0; j < 4; j++){
                         if(c.tiles[i][j] != ((4*(i) + (j+1))%16)){
@@ -85,5 +90,20 @@ bool check_correct(struct game_state c){
                 }
         }
 	return true;
+}
+
+bool check(struct game_state c, struct queue q){
+	int i = 0; 
+	//printf("flag");
+	while(q.data.head != NULL && i < 25){
+		//printf("flag2");
+		if ((serialize(c)>>15) == (q.data.head->value>>15)){
+			//printf("aha!");
+			return false;
+		}
+		q.data.head = q.data.head->next; 
+		i++;
+	}
+	return true; 
 }
 
