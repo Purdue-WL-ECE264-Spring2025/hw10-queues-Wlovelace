@@ -1,8 +1,89 @@
 #include "queue.h"
 #include "tile_game.h"
 
-void enqueue(struct queue *q, struct game_state state) {}
+//void insert_at_tail(struct linked_list *list, size_t value);
+//size_t remove_from_head(struct linked_list *list); 
+//void free_list(struct linked_list list); 
+//struct queue {
+//  struct linked_list data;
+//};
+//struct game_state {
+//  uint8_t tiles[4][4];
+//  uint8_t empty_row, empty_col;
+//  uint16_t num_steps;
+//};
+//uint64_t serialize(struct game_state state);
+//struct game_state deserialize(uint64_t state);
+//void move_up(struct game_state *state);
+//void move_down(struct game_state *state);
+//void move_left(struct game_state *state);
+//void move_right(struct game_state *state);
+bool check_correct(struct game_state c);
 
-struct game_state dequeue(struct queue *q) { return (struct game_state){0}; }
+void enqueue(struct queue *q, struct game_state state) {
+	insert_at_tail(&q->data,serialize(state)); 	
+}
 
-int number_of_moves(struct game_state start) { return 0; }
+struct game_state dequeue(struct queue *q) { 
+	return deserialize(remove_from_head(&q->data));
+}
+
+int number_of_moves(struct game_state start) { 
+	struct queue q;
+	q.data.head = NULL;
+	enqueue(&q, start); 
+
+	while (q.data.head != NULL){
+		
+		struct game_state c = dequeue(&q); 	 
+		
+		if(check_correct(c) == true){
+			free_list(q.data); 
+			return c.num_steps;
+		}
+
+		if(c.empty_row != 0){
+			struct game_state new = c; 
+			move_down(&new);
+			enqueue(&q, new); 
+			//free(new);  		
+		}
+		if(c.empty_row != 3){
+			struct game_state new = c;
+                        move_up(&new);
+                        enqueue(&q, new);
+			//free(new);
+                }
+		if(c.empty_col != 0){
+			struct game_state new = c;
+                        move_right(&new);
+                        enqueue(&q, new);
+			//free(new);
+                }
+		if(c.empty_col != 3){
+			struct game_state new = c;
+                        move_left(&new);
+                        enqueue(&q, new);
+			//free(new); 
+                }
+
+		c.num_steps++;
+
+	}
+
+
+
+	return -1; 
+}
+
+bool check_correct(struct game_state c){
+	for (int i = 0; i < 4; i++){
+                for (int j = 0; j < 4; j++){
+                        if(c.tiles[i][j] != ((4*(i) + (j+1))%16)){
+                                return false;
+                        }
+                }
+        }
+	return true;
+}
+
